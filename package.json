@@ -1,0 +1,19 @@
+{
+    "name": "@yw-team/yw-sh",
+    "description": "Cloud Yellow Team | Shell SDK",
+    "version": "0.0.0-alpha.0",
+    "license": "MIT",
+    "homepage": "https://yellowteam.cloud",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "bugs": {
+        "url": "https://bugs.yellowteam.cloud"
+    },
+    "author": {
+        "name": "Raphael Rego",
+        "email": "raphael@yellowteam.cloud",
+        "url": "https://raphaelcarlosr.dev"
+    }
+}
