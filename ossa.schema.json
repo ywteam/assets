@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+      "ParamValue": {
+        "type": "object",
+        "properties": {
+          "argv": {
+            "type": "string",
+            "pattern": "^--[^=]+=.+$"
+          },
+          "env": { "type": "string" },
+          "config": {
+            "type": "string",
+            "pattern": "^config\\.[a-zA-Z0-9_]+$"
+          },
+          "query": { "type": "string" },
+          "body": { "type": "string" },
+          "header": { "type": "string" },
+          "cookie": { "type": "string" },
+          "path": { "type": "string" },
+          "form": { "type": "string" },
+          "formData": { "type": "string" },
+          "prompt": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "Param": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["string", "number", "boolean", "path", "url", "email", "date", "datetime", "time", "file", "image", "array", "object", "enum", "any"]
+          },
+          "description": { "type": "string" },
+          "required": { "type": "boolean" },
+          "default": {},
+          "enum": { "type": "array" },
+          "value": { "$ref": "#/definitions/ParamValue" }
+        },
+        "required": ["type"],
+        "additionalProperties": false
+      },
+      "ScannerVendor": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "logo": { "type": "string" },
+          "color": { "type": "string" },
+          "license": {
+            "type": "string",
+            "enum": ["MIT", "GPL", "Apache", "BSD", "Proprietary"]
+          },
+          "oss": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      },
+      "ScannerCapabilities": {
+        "type": "object",
+        "properties": {
+          "hooks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["pre-commit", "pre-push", "commit-msg", "post-commit", "post-push", "post-checkout", "post-merge", "post-rewrite", "post-applypatch", "post-update"]
+            }
+          },
+          "formats": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["json", "text", "sql", "xml", "yml", "csv", "sarif", "html", "markdown", "cyclonedx", "spdx", "swid"]
+            }
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["file", "dir", "git", "svn", "hg", "bzr", "cvs", "tfs", "vss", "perforce", "clearcase", "accurev", "plastic", "fossil", "rtc", "p4", "gitlab", "github", "bitbucket", "azure", "gitea", "gogs", "stash", "gerrit", "phabricator", "jira", "trello", "asana", "slack", "teams", "email", "webhook", "api", "cli", "stdin", "stdout", "stderr", "env", "config", "query", "body", "header", "cookie", "path", "form", "formData", "prompt"]
+            }
+          },
+          "features": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["hooks", "formats", "features"],
+        "additionalProperties": false
+      },
+      "ScannerCli": {
+        "type": "object",
+        "properties": {
+          "cmd": { "type": "string" },
+          "args": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "version": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "help": { "type": "string" }
+        },
+        "required": ["cmd", "args", "version", "help"],
+        "additionalProperties": false
+      },
+      "Scanner": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "vendor": { "$ref": "#/definitions/ScannerVendor" },
+          "capabilities": { "$ref": "#/definitions/ScannerCapabilities" },
+          "packages": {
+            "type": "object",
+            "patternProperties": {
+              "^(apt|brew|docker|npm|shell|bat|choco|scoop|yum|zypper|pkg|port|snap|gem|pip|composer|cargo|go|maven|gradle|ant|nuget)$": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          },
+          "cli": { "$ref": "#/definitions/ScannerCli" },
+          "params": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/Param" }
+          },
+          "api": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "params": { "type": "array", "items": { "type": "string" } },
+                "args": { "type": "array", "items": { "type": "string" } },
+                "help": { "type": "string" }
+              },
+              "required": ["args"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["id", "vendor", "capabilities", "packages", "cli"],
+        "additionalProperties": false
+      },
+      "Schema": {
+        "type": "object",
+        "properties": {
+          "params": {
+            "type": "object",
+            "additionalProperties": { "$ref": "#/definitions/Param" }
+          },
+          "scanners": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/Scanner" }
+          }
+        },
+        "required": ["params", "scanners"],
+        "additionalProperties": false
+      }
+    },
+    "type": "object",
+    "properties": {
+      "schema": { "$ref": "#/definitions/Schema" }
+    },
+    "required": ["schema"]
+  }
+  
